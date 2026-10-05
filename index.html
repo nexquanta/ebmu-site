@@ -1,0 +1,1633 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/png" href="uploads/logoredimensionado.png" />
+<title>EBMU — Evidence-Based Mindfulness University</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
+  html { height: 100%; }
+  body { background: #000; margin: 0; }
+
+  /* Sections behave as full-width blocks over the hero backdrop */
+  .sections-wrapper > section {
+    border-radius: 0;
+    box-shadow: none;
+  }
+  /* A EBMU follows a white gap — no card edge needed */
+  .sections-wrapper > #a-ebmu {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  /* ─── Hero → A EBMU flash overlays ─── */
+  .light-portal {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 260% 230% at 100% 0%,
+        rgba(255,255,255,1)     0%,
+        rgba(255,252,242,0.90) 14%,
+        rgba(255,247,230,0.72) 30%,
+        rgba(255,242,218,0.46) 48%,
+        rgba(255,238,210,0.20) 65%,
+        rgba(255,235,205,0.06) 80%,
+        transparent            93%
+      ),
+      radial-gradient(ellipse 190% 170% at 100% 0%,
+        rgba(255,253,245,0.50) 0%,
+        rgba(255,249,235,0.18) 45%,
+        transparent            65%
+      );
+    z-index: 6; opacity: 0; pointer-events: none; will-change: opacity;
+  }
+  .light-flash {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    z-index: 7; opacity: 0; pointer-events: none; will-change: opacity;
+  }
+  .light-ray {
+    position: absolute;
+    top: 0; right: 0;
+    width: 200%; height: 6px;
+    background: linear-gradient(to left,
+      rgba(255,255,215,0.95) 0%,
+      rgba(255,255,240,0.7)  15%,
+      rgba(255,255,255,0.45) 35%,
+      transparent            60%
+    );
+    transform-origin: top right;
+    transform: rotate(38deg);
+    filter: blur(5px);
+    z-index: 8; opacity: 0; pointer-events: none; will-change: opacity;
+  }
+
+  .hero-content {
+    will-change: opacity;
+  }
+
+  @media (max-width: 767px) {
+    /* Hero grows with its content (newsletter) and scrolls normally */
+    .hero-shell {
+      position: relative !important;
+      height: auto !important;
+      min-height: 100vh;
+    }
+    /* Spacer reserved for the removed desktop flash transition */
+    .hero-to-sobre-gap {
+      height: 20vh !important;
+      background: transparent !important;
+    }
+    /* Video stays pinned as the page backdrop (same concept as the sticky desktop hero) */
+    .hero-shell #hero-video {
+      position: fixed;
+      height: 100vh;
+      height: 100lvh;
+    }
+    /* Section labels always visible */
+    .sections-wrapper div[style*="opacity"]:has(> span.uppercase) {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  .store-visual-card {
+    width: 100%;
+    aspect-ratio: 1920 / 819;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+  }
+
+  .store-visual-card > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .store-visual-card--soon > img {
+    object-fit: cover;
+    object-position: left center;
+  }
+
+  .ebmu-pillar-reveal {
+    display: flex;
+  }
+
+  .ebmu-pillar-grid {
+    grid-auto-rows: 1fr;
+  }
+
+  .ebmu-pillar-card {
+    flex: 1;
+    overflow: hidden;
+    padding: 0;
+    gap: 0;
+    min-height: 0;
+  }
+
+  .ebmu-pillar-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .ebmu-pillar-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 1.75rem;
+  }
+
+  .ebmu-pillar-title {
+    min-height: 2.5em;
+  }
+
+  .news-filter-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .news-filter-scroll::-webkit-scrollbar { display: none; }
+
+  .liquid-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 0;
+    padding: 1.4px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.45) 0%,
+      rgba(255,255,255,0.15) 20%,
+      rgba(255,255,255,0) 40%,
+      rgba(255,255,255,0) 60%,
+      rgba(255,255,255,0.15) 80%,
+      rgba(255,255,255,0.45) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ─── Dark→Light transition strip ─── */
+  .transition-dark-light {
+    position: relative;
+    height: 50vh;
+    overflow: hidden;
+  }
+  @keyframes grain-wander {
+    0%    { transform: translate(0%,  0%); }
+    20%   { transform: translate(-4%, -3%); }
+    40%   { transform: translate(3%,  -5%); }
+    60%   { transform: translate(-5%, 4%); }
+    80%   { transform: translate(4%,  3%); }
+    100%  { transform: translate(0%,  0%); }
+  }
+
+</style>
+</head>
+<body id="inicio">
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+
+const { useEffect, useRef, useState } = React;
+
+/* shared scroll state for snow attraction */
+let scrollFlashP = 0;
+const FORMSPREE_ENDPOINT = "COLE_AQUI_O_ENDPOINT_FORMSPREE";
+
+/* ─── Icons ─── */
+const Icon = ({ children, size = 24, strokeWidth = 2, ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" strokeWidth={strokeWidth}
+    strokeLinecap="round" strokeLinejoin="round" {...props}>{children}</svg>
+);
+const ArrowRight  = (p) => <Icon {...p}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></Icon>;
+const Instagram   = (p) => <Icon {...p}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></Icon>;
+const Check       = (p) => <Icon {...p}><polyline points="20 6 9 17 4 12"/></Icon>;
+const BookOpen    = (p) => <Icon {...p}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></Icon>;
+const ShoppingBag = (p) => <Icon {...p}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></Icon>;
+const Package     = (p) => <Icon {...p}><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></Icon>;
+const Compass     = (p) => <Icon {...p}><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></Icon>;
+const Layers      = (p) => <Icon {...p}><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></Icon>;
+const Users       = (p) => <Icon {...p}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Icon>;
+const Atom        = (p) => <Icon {...p}><circle cx="12" cy="12" r="1"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5z"/><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5z"/></Icon>;
+const HeartPulse  = (p) => <Icon {...p}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></Icon>;
+const Star        = (p) => <Icon {...p}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></Icon>;
+
+function BackToHome({ dark = false }) {
+  const colorClass = dark ? "text-white/60 hover:text-white" : "text-black/60 hover:text-black";
+  return (
+    <div className="mt-14 flex justify-center">
+      <a href="#inicio" className={`inline-flex items-center gap-2 text-sm ${colorClass} transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current`}>
+        <ArrowRight size={14} style={{ transform: "rotate(-90deg)" }} aria-hidden="true" />
+        <span>Voltar para o início</span>
+      </a>
+    </div>
+  );
+}
+
+/* ─── Snow ─── */
+function Snow() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    let raf;
+    const N = 120;
+    const ps = [];
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    resize();
+    window.addEventListener("resize", resize);
+    for (let i = 0; i < N; i++) ps.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 2.5 + 0.5,
+      speed: Math.random() * 0.8 + 0.3,
+      drift: Math.random() * 0.4 - 0.2,
+      opacity: Math.random() * 0.07 + 0.02,
+    });
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const fp = scrollFlashP;
+      for (const p of ps) {
+        const displayOpacity = Math.max(0, p.opacity * (1 - fp * 2.2));
+        if (displayOpacity > 0.002) {
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${displayOpacity})`; ctx.fill();
+        }
+        if (fp > 0.05) {
+          const tx = canvas.width, ty = 0;
+          const dx = tx - p.x, dy = ty - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const force = fp * 5;
+          p.x += (dx / dist) * force;
+          p.y += (dy / dist) * force;
+          if (dist < 25 || p.x > canvas.width + 10 || p.y < -10) {
+            p.x = Math.random() * canvas.width;
+            p.y = canvas.height * 0.3 + Math.random() * canvas.height * 0.7;
+          }
+        } else {
+          p.y += p.speed; p.x += p.drift;
+          if (p.y > canvas.height + 5) { p.y = -5; p.x = Math.random() * canvas.width; }
+          if (p.x > canvas.width + 5) p.x = -5;
+          if (p.x < -5) p.x = canvas.width + 5;
+        }
+      }
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
+  }, []);
+  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }} />;
+}
+
+/* ─── HeroVideo: fade-in from start, loop 1s around middle ─── */
+const LOOP_DURATION = 1;
+function HeroVideo() {
+  const ref = useRef(null);
+  const rafRef = useRef(null);
+  const loopStartRef = useRef(null);
+  const loopingRef = useRef(false);
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    const cancelFade = () => { if (rafRef.current != null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; } };
+    const fadeIn = () => {
+      cancelFade();
+      const start = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / 800);
+        video.style.opacity = String(t);
+        if (t < 1) rafRef.current = requestAnimationFrame(step); else rafRef.current = null;
+      };
+      rafRef.current = requestAnimationFrame(step);
+    };
+    const onLoaded = () => {
+      const mid = video.duration / 2;
+      loopStartRef.current = Math.max(0, mid - LOOP_DURATION / 2);
+      loopingRef.current = false;
+      video.currentTime = 0;
+      video.style.opacity = "0";
+      video.play().catch(() => {});
+      fadeIn();
+    };
+    const onTimeUpdate = () => {
+      const loopStart = loopStartRef.current;
+      if (loopStart === null) return;
+      const loopEnd = loopStart + LOOP_DURATION;
+      if (!loopingRef.current && video.currentTime >= loopStart) loopingRef.current = true;
+      if (loopingRef.current && video.currentTime >= loopEnd) video.currentTime = loopStart;
+    };
+    video.style.opacity = "0";
+    video.addEventListener("loadeddata", onLoaded);
+    video.addEventListener("timeupdate", onTimeUpdate);
+    if (video.readyState >= 2) onLoaded();
+    return () => { cancelFade(); video.removeEventListener("loadeddata", onLoaded); video.removeEventListener("timeupdate", onTimeUpdate); };
+  }, []);
+  return (
+    <video id="hero-video" ref={ref} className="absolute inset-0 w-full h-full object-cover"
+      style={{ opacity: 0, objectPosition: "center 80%" }}
+      src="uploads/0521.mp4" muted autoPlay playsInline preload="auto" />
+  );
+}
+
+/* ─── Reveal: scroll-triggered animations via IntersectionObserver ─── */
+function useReveal(threshold = 0.12) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, visible];
+}
+
+function Reveal({ children, delay = 0, variant = "fadeUp", className = "", style = {} }) {
+  const [ref, visible] = useReveal();
+  const ease = "cubic-bezier(0.16,1,0.3,1)";
+  const tr  = `opacity 0.85s ${ease} ${delay}ms, transform 0.85s ${ease} ${delay}ms`;
+  const trF = `opacity 1s ease ${delay}ms`;
+  const v = {
+    fadeUp:    { opacity: visible?1:0, transform: visible?"translateY(0)":"translateY(48px)",                      transition: tr  },
+    fadeLeft:  { opacity: visible?1:0, transform: visible?"translateX(0)":"translateX(-60px)",                     transition: tr  },
+    fadeRight: { opacity: visible?1:0, transform: visible?"translateX(0)":"translateX(60px)",                      transition: tr  },
+    scale:     { opacity: visible?1:0, transform: visible?"scale(1) translateY(0)":"scale(0.88) translateY(24px)", transition: tr  },
+    fade:      { opacity: visible?1:0,                                                                             transition: trF },
+  };
+  return (
+    <div ref={ref} className={className} style={{ ...(v[variant] ?? v.fadeUp), ...style }}>
+      {children}
+    </div>
+  );
+}
+
+/* ─── StatNumber: animated counter on scroll ─── */
+function StatNumber({ to, suffix = "", duration = 1300 }) {
+  const [ref, visible] = useReveal(0.4);
+  const [val, setVal] = useState(0);
+  const started = useRef(false);
+  useEffect(() => {
+    if (!visible || started.current) return;
+    started.current = true;
+    const t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / duration);
+      setVal(Math.round((1 - Math.pow(1 - p, 3)) * to));
+      if (p < 1) requestAnimationFrame(tick); else setVal(to);
+    };
+    requestAnimationFrame(tick);
+  }, [visible, to, duration]);
+  return (
+    <div ref={ref} className="text-3xl md:text-4xl text-white"
+      style={{ fontFamily: "'Instrument Serif', serif" }}>{val}{suffix}</div>
+  );
+}
+
+/* ─── Section gap: transparent strip that reveals the hero backdrop ─── */
+function SectionGap({ height = '30vh', background = 'transparent', className }) {
+  return <div className={className} style={{ height, background }} aria-hidden="true" />;
+}
+
+/* ─── Section: Sobre ─── */
+function SobreSection() {
+  return (
+    <section id="a-ebmu" className="bg-white py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <div className="max-w-6xl mx-auto">
+        <Reveal variant="fade">
+          <span className="text-black/40 text-xs tracking-[0.3em] uppercase">A EBMU</span>
+        </Reveal>
+        <Reveal delay={100} variant="fadeUp">
+          <h2 className="mt-4 text-4xl md:text-5xl lg:text-6xl text-black leading-tight max-w-3xl"
+            style={{ fontFamily: "'Instrument Serif', serif" }}>
+            Para praticar. Para estudar. Para aprofundar. Para conduzir melhor.
+          </h2>
+        </Reveal>
+
+        <div className="mt-12 grid md:grid-cols-2 gap-x-14 gap-y-6">
+          <div className="flex flex-col gap-6">
+            <Reveal delay={180} variant="fadeUp">
+              <p className="text-black/65 text-base leading-relaxed">
+                <em>Mindfulness</em>, segundo uma das definições mais difundidas por Jon Kabat-Zinn, pode ser compreendido como o exercício de direcionar a atenção para o momento presente, com abertura e consciência, reduzindo automatismos diante de pensamentos, emoções, sensações corporais, impulsos, hábitos, estímulos e experiências da vida cotidiana.
+              </p>
+            </Reveal>
+            <Reveal delay={260} variant="fadeUp">
+              <p className="text-black/65 text-base leading-relaxed">
+                Não se limitando a um exercício ou a uma prática formal, <em>Mindfulness</em> também se refere a uma atitude: uma forma mais consciente, curiosa e menos reativa de se relacionar com a própria experiência.
+              </p>
+            </Reveal>
+            <Reveal delay={340} variant="fadeUp">
+              <p className="text-black/65 text-base leading-relaxed">
+                No Brasil, a meditação é reconhecida como uma Prática Integrativa e Complementar em Saúde no âmbito da PNPIC/SUS. <em>Mindfulness</em>, no entanto, pode ser apresentado como uma abordagem contemporânea de atenção plena ligada ao campo da meditação e das práticas baseadas em evidências.
+              </p>
+            </Reveal>
+            <Reveal delay={420} variant="fadeUp">
+              <p className="text-black/65 text-base leading-relaxed">
+                A EBMU se aproxima desse campo com responsabilidade, mantendo essa orientação ética ao situar a prática de <em>Mindfulness</em> como um complemento ao acompanhamento psicológico, psiquiátrico ou a outros cuidados em saúde quando necessários.
+              </p>
+            </Reveal>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <Reveal delay={220} variant="fadeUp">
+              <p className="text-black/65 text-base leading-relaxed">
+                Embora possa ser utilizado como prática complementar em contextos de cuidado, o <em>Mindfulness</em> não se restringe ao tratamento ou ao ambiente clínico, podendo ser cultivado no dia a dia como uma forma de presença, autorregulação e maior consciência nas relações, no trabalho, nos estudos, nos hábitos e nas pequenas escolhas cotidianas.
+              </p>
+            </Reveal>
+            <Reveal delay={300} variant="fadeUp">
+              <p className="text-black/65 text-base leading-relaxed">
+                A EBMU nasce como uma plataforma de prática, estudo e aprofundamento em <em>Mindfulness</em>. Foi criada para quem deseja incorporar a atenção plena na própria vida — e também para profissionais e futuros instrutores que querem conduzir práticas com mais segurança, clareza e responsabilidade.
+              </p>
+            </Reveal>
+            <Reveal delay={380} variant="fadeUp">
+              <p className="text-black/65 text-base leading-relaxed">
+                A plataforma é organizada como um ambiente contínuo de aprendizagem, no qual o conhecimento científico é valorizado e os limites da prática são reconhecidos, evitando promessas simplistas sobre saúde mental, desempenho ou transformação pessoal.
+              </p>
+            </Reveal>
+            <Reveal delay={460} variant="fadeUp">
+              <p className="text-black/65 text-base leading-relaxed">
+                A EBMU também aproxima pessoas, ideias e trajetórias, criando um ambiente fértil para conexões qualificadas e para uma atuação mais ética, consistente e autêntica no campo do <em>Mindfulness</em>.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+
+        <div className="ebmu-pillar-grid mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch gap-5">
+          {pilaresEbmu.map(({ number, title, desc }, i) => (
+            <Reveal key={title} delay={i * 80} className="ebmu-pillar-reveal">
+              <div className="ebmu-pillar-card bg-white border border-black/10 rounded-2xl flex flex-col h-full">
+                <img
+                  src={`uploads/card${i + 1}.png`}
+                  alt=""
+                  className="ebmu-pillar-image"
+                />
+                <div className="ebmu-pillar-content">
+                  <span className="text-black/40 text-xs tracking-[0.2em]" aria-hidden="true">{number}</span>
+                  <div className="mt-5">
+                    <h3 className="ebmu-pillar-title text-black font-medium text-base leading-snug tracking-[0.04em]">{title}</h3>
+                    <p className="mt-3 text-black/65 text-sm leading-relaxed">{desc}</p>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <BackToHome />
+      </div>
+    </section>
+  );
+}
+
+function RodrigoDinizSection() {
+  return (
+    <section id="rodrigo-diniz" className="bg-black py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-[420px_1fr] gap-10 lg:gap-16 items-center">
+        <Reveal delay={80} variant="fadeUp">
+          <div className="relative overflow-hidden rounded-2xl bg-[#111111] shadow-[0_24px_70px_rgba(0,0,0,0.22)] h-[500px] md:h-[520px] ring-1 ring-black/10">
+            <img
+              src="uploads/nova.jpeg"
+              alt="Rodrigo Diniz"
+              className="absolute inset-0 h-full w-full object-cover object-[25%_0%] scale-[1.08] grayscale-0 contrast-[1.05] brightness-[0.98]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-black/0" />
+            <div className="absolute inset-x-0 bottom-0 p-6 md:p-7 text-white">
+              <div className="text-[10px] tracking-[0.35em] uppercase text-white/55"></div>
+              <div className="mt-3 text-4xl md:text-5xl leading-none"
+                style={{ fontFamily: "'Instrument Serif', serif" }}>
+                Rodrigo Diniz
+              </div>
+              <p className="mt-3 max-w-xs text-sm md:text-base text-white/70 leading-relaxed">
+                Fundador da EBMU
+              </p>
+            </div>
+          </div>
+        </Reveal>
+
+        <div className="flex flex-col gap-5">
+          <Reveal>
+            <span className="text-white/40 text-xs tracking-[0.3em] uppercase">Rodrigo Diniz</span>
+          </Reveal>
+          <Reveal delay={100} variant="fadeUp">
+            <h2 className="text-4xl md:text-5xl text-white max-w-2xl"
+              style={{ fontFamily: "'Instrument Serif', serif" }}>
+              Fundador da EBMU
+            </h2>
+          </Reveal>
+          <Reveal delay={180} variant="fadeUp">
+            <p className="text-white/60 text-base leading-relaxed max-w-2xl">
+              Rodrigo Diniz é psicólogo, professor/instrutor de Mindfulness e fundador da EBMU — Evidence-Based Mindfulness University. Com experiência clínica e institucional de quase 20 anos, construiu sua trajetória integrando Terapia Cognitivo-Comportamental, terapias comportamentais de "terceira onda", mindfulness, neurociência e práticas baseadas em evidências.
+            </p>
+          </Reveal>
+          <Reveal delay={220} variant="fadeUp">
+            <p className="text-white/60 text-base leading-relaxed max-w-2xl">
+              Possui formação pelo Beck Institute e especialização em Mindfulness pela FCMSCSP - Faculdade de Ciências Médicas da Santa Casa de São Paulo.
+            </p>
+          </Reveal>
+         
+        </div>
+      </div>
+      <BackToHome dark />
+    </section>
+  );
+}
+
+/* ─── Pilares apresentados em "A EBMU" ─── */
+const pilaresEbmu = [
+  {
+    number: "01",
+    title: "ESTUDO E EVIDÊNCIAS",
+    desc: "Conteúdos que exploram os fundamentos do mindfulness, sua literatura científica e os limites do conhecimento disponível, favorecendo uma compreensão crítica e contextualizada da prática.",
+  },
+  {
+    number: "02",
+    title: "PRÁTICA",
+    desc: "O mindfulness compreendido para além da teoria, valorizando a experiência direta, o cultivo da atenção e a relação consciente com aquilo que acontece no momento presente.",
+  },
+  {
+    number: "03",
+    title: "REFLEXÃO CRÍTICA",
+    desc: "Um olhar atento para as possibilidades e os limites do mindfulness, sem promessas universais e sem separar a prática de seus contextos científicos, históricos e humanos.",
+  },
+];
+
+/* ─── Section: Por Dentro (editorial / carrossel de notícias) ─── */
+function formatNoticiaData(iso) {
+  if (!iso) return "";
+  const parsed = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return iso;
+  return parsed.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+}
+
+function NewsCard({ item }) {
+  const noticiaHref = `noticias/noticia.html?slug=${encodeURIComponent(item.slug || item.id)}`;
+
+  return (
+    <article className="news-card flex min-w-0 flex-col bg-white">
+      <a href={noticiaHref} target="_blank" rel="noopener noreferrer" className="group flex h-full min-w-0 flex-1 flex-col text-inherit no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black">
+        <div className="aspect-[16/9] w-full overflow-hidden bg-black/5">
+          <img src={item.imagem} alt={item.imagemAlt || item.titulo} loading="lazy" className="w-full h-full object-cover" />
+        </div>
+        <div className="pt-5 flex flex-col gap-3 flex-1">
+          <div className="flex items-center gap-2 text-black/40 text-xs tracking-[0.15em] uppercase">
+            <span>{item.categoria}</span>
+            <span aria-hidden="true">·</span>
+            <time dateTime={item.data}>{formatNoticiaData(item.data)}</time>
+          </div>
+          <h3 className="text-black font-medium text-lg leading-snug break-words">{item.titulo}</h3>
+          <p className="text-black/55 text-sm leading-relaxed flex-1">{item.resumo}</p>
+          <span className="mt-2 inline-flex w-fit items-center gap-1 be-black text-sm font-medium transition-all group-hover:gap-2">
+            LER MAIS <ArrowRight size={14} />
+          </span>
+        </div>
+      </a>
+    </article>
+  );
+}
+
+function NewsEditorialGrid() {
+  const [items, setItems] = useState(null);
+  const [activeFilter, setActiveFilter] = useState(null);
+  const filters = [
+    { label: "TODOS", category: null },
+    { label: "NOVIDADES", category: "NOVIDADES" },
+    { label: "ENTREVISTAS", category: "ENTREVISTA" },
+    { label: "CIÊNCIA", category: "CIÊNCIA" },
+  ];
+
+  useEffect(() => {
+    let active = true;
+    fetch("noticias/noticias.json")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (!active) return;
+        const valid = Array.isArray(data) ? data.filter((n) => typeof n.imagem === "string" && n.imagem.trim() !== "") : [];
+        const sorted = valid.sort((a, b) => new Date(b.data) - new Date(a.data));
+        setItems(sorted);
+      })
+      .catch(() => { if (active) setItems([]); });
+    return () => { active = false; };
+  }, []);
+
+  if (items === null) return null;
+
+  if (items.length === 0) {
+    return <p className="mt-14 text-black/40 text-sm">Em breve, novidades da EBMU por aqui.</p>;
+  }
+
+  const selectedFilter = filters.find((filter) => filter.label === activeFilter);
+  const visibleItems = !selectedFilter
+    ? items.slice(0, 3)
+    : selectedFilter.category
+      ? items.filter((item) => item.categoria?.toLocaleUpperCase("pt-BR") === selectedFilter.category)
+      : items;
+
+  return (
+    <div className="mt-14">
+      <div className="news-filter-scroll -mx-1 overflow-x-auto px-1">
+        <div role="group" aria-label="Filtrar publicações por categoria" className="flex w-max min-w-full gap-7 md:gap-10">
+          {filters.map((filter) => (
+            <button
+              key={filter.label}
+              type="button"
+              aria-pressed={activeFilter === filter.label}
+              onClick={() => setActiveFilter(filter.label)}
+              className={`whitespace-nowrap border-b-2 py-2 text-xs tracking-[0.16em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black ${activeFilter === filter.label ? "border-black text-black font-medium" : "border-transparent text-black/50 hover:text-black"}`}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+        {visibleItems.map((item) => <NewsCard key={item.id} item={item} />)}
+      </div>
+    </div>
+  );
+}
+
+function PorDentroSection() {
+  return (
+    <section id="por-dentro" className="bg-white py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <div className="max-w-6xl mx-auto">
+        <Reveal>
+          <span className="text-black/40 text-xs tracking-[0.3em] uppercase">Por dentro da EBMU</span>
+        </Reveal>
+        <Reveal delay={100}>
+          <h2 className="mt-4 text-4xl md:text-5xl text-black max-w-2xl"
+            style={{ fontFamily: "'Instrument Serif', serif" }}>
+            Acompanhe o que acontece por aqui.
+          </h2>
+        </Reveal>
+        <Reveal delay={160} variant="fadeUp">
+          <p className="mt-5 text-black/65 text-base leading-relaxed max-w-2xl">
+            Novidades, entrevistas, ciência e atualizações da Evidence-Based Mindfulness University.
+          </p>
+        </Reveal>
+
+        <Reveal delay={220}>
+          <NewsEditorialGrid />
+        </Reveal>
+        <BackToHome />
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section: Metodologia N ─── */
+function MetodoNSection() {
+  const [form, setForm] = useState({ nome: "", idade: "", profissao: "", email: "", area_interesse: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+  const set = (key) => (event) => setForm((current) => ({ ...current, [key]: event.target.value }));
+
+  const submit = async (event) => {
+    event.preventDefault();
+    setStatusMessage("");
+
+    const formElement = event.currentTarget;
+    if (!formElement.checkValidity()) {
+      formElement.reportValidity();
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("https://formspree.io/f/xrpbqwad", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(formElement),
+      });
+
+      if (!response.ok) throw new Error("Formspree request failed");
+
+      await response.json();
+      setStatusMessage("Você está na lista.\nAvisaremos quando houver novidades sobre a Metodologia N.");
+      setForm({ nome: "", idade: "", profissao: "", email: "", area_interesse: "" });
+      formElement.reset();
+    } catch (error) {
+      setStatusMessage("Não foi possível enviar o cadastro. Tente novamente em alguns instantes.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const inputClass = "bg-transparent border-b border-black/20 px-0 py-3 text-black placeholder:text-black/35 text-sm outline-none focus:border-black/60 transition-colors w-full";
+  const dimensionClass = "text-base md:text-lg leading-relaxed";
+  return (
+    <section id="metodo-n" className="bg-white py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <div className="max-w-6xl mx-auto">
+        <Reveal>
+          <span className="text-black/40 text-xs tracking-[0.3em] uppercase">METODOLOGIA N</span>
+        </Reveal>
+        <Reveal delay={100}>
+          <h2 className="mt-8 text-5xl md:text-7xl text-black max-w-4xl leading-[0.98]"
+            style={{ fontFamily: "'Instrument Serif', serif" }}>
+            Uma mentoria para diferentes dimensões da vida.
+          </h2>
+        </Reveal>
+        <Reveal delay={200}>
+          <p className="mt-14 max-w-5xl flex flex-wrap gap-x-3 gap-y-1 text-black/45">
+            <span className={dimensionClass} style={{ color: "#597766" }}>Saúde</span>
+            <span className="text-black/20" aria-hidden="true">·</span>
+            <span className={dimensionClass} style={{ color: "#687b8d" }}>Desenvolvimento pessoal</span>
+            <span className="text-black/20" aria-hidden="true">·</span>
+            <span className={dimensionClass} style={{ color: "#765f82" }}>Criatividade</span>
+            <span className="text-black/20" aria-hidden="true">·</span>
+            <span className={dimensionClass} style={{ color: "#3e5873" }}>Liderança</span>
+            <span className="text-black/20" aria-hidden="true">·</span>
+            <span className={dimensionClass} style={{ color: "#9a6755" }}>Negócios</span>
+            <span className="text-black/20" aria-hidden="true">·</span>
+            <span className={dimensionClass} style={{ color: "#a4814d" }}>Carreira e transições</span>
+            <span className="text-black/20" aria-hidden="true">·</span>
+            <span className={dimensionClass} style={{ color: "#754653" }}>Tomada de decisão</span>
+          </p>
+        </Reveal>
+        <div className="mt-24 grid md:grid-cols-[minmax(220px,0.75fr)_minmax(0,1.25fr)] gap-12 md:gap-20 items-start">
+          <Reveal delay={280} className="md:self-stretch">
+            <div className="md:flex md:h-full md:flex-col">
+              <h3 className="text-black text-xs tracking-[0.25em] uppercase">ENTRE NA LISTA DE ESPERA</h3>
+              <div className="mt-24 flex justify-center md:mt-0 md:flex-1 md:items-center">
+                <img
+                  src="uploads/METODON.png"
+                  alt="Símbolo da Metodologia N"
+                  decoding="async"
+                  className="w-[min(260px,65vw)] md:w-[min(320px,72%)] lg:w-[min(380px,78%)] h-auto"
+                />
+              </div>
+            </div>
+          </Reveal>
+          <Reveal delay={360} variant="fadeUp">
+            <form className="flex flex-col gap-6" onSubmit={submit}>
+              <div className="grid sm:grid-cols-2 gap-x-6 gap-y-5">
+                <div>
+                  <label htmlFor="metodo-n-nome" className="text-black/55 text-xs">Nome</label>
+                  <input id="metodo-n-nome" name="nome" type="text" value={form.nome} onChange={set("nome")} className={inputClass} required />
+                </div>
+                <div>
+                  <label htmlFor="metodo-n-idade" className="text-black/55 text-xs">Idade</label>
+                  <input id="metodo-n-idade" name="idade" type="number" value={form.idade} onChange={set("idade")} className={inputClass} required />
+                </div>
+                <div>
+                  <label htmlFor="metodo-n-profissao" className="text-black/55 text-xs">Profissão</label>
+                  <input id="metodo-n-profissao" name="profissao" type="text" value={form.profissao} onChange={set("profissao")} className={inputClass} required />
+                </div>
+                <div>
+                  <label htmlFor="metodo-n-email" className="text-black/55 text-xs">E-mail</label>
+                  <input id="metodo-n-email" name="email" type="email" value={form.email} onChange={set("email")} className={inputClass} required />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="metodo-n-area" className="text-black/55 text-xs">Principal área de interesse</label>
+                <select id="metodo-n-area" name="area_interesse" value={form.area_interesse} onChange={set("area_interesse")} className={`${inputClass} appearance-none`} required>
+                  <option value="">Selecione uma área</option>
+                  <option value="Saúde">Saúde</option>
+                  <option value="Desenvolvimento pessoal">Desenvolvimento pessoal</option>
+                  <option value="Criatividade">Criatividade</option>
+                  <option value="Liderança">Liderança</option>
+                  <option value="Negócios">Negócios</option>
+                  <option value="Carreira e transições">Carreira e transições</option>
+                  <option value="Tomada de decisão">Tomada de decisão</option>
+                  <option value="Outro">Outro</option>
+                </select>
+              </div>
+              <button type="submit" disabled={isSubmitting}
+                className="mt-2 bg-black text-white rounded-full px-6 py-3 text-sm font-medium hover:bg-black/80 transition-colors flex items-center justify-center gap-2 self-start disabled:opacity-70 disabled:cursor-not-allowed">
+                {isSubmitting ? "ENVIANDO..." : <>ENTRAR NA LISTA DE ESPERA <ArrowRight size={15} /></>}
+              </button>
+              <p className="text-black/40 text-xs leading-relaxed max-w-lg">
+                Ao enviar seus dados, você concorda em receber comunicações sobre a Metodologia N. Consulte nossa <a href="privacidade.html" target="_blank" rel="noopener noreferrer" className="underline hover:text-black/70 transition-colors">Política de Privacidade</a>.
+              </p>
+              {statusMessage && (
+                <p className="text-black/55 text-sm whitespace-pre-line" role="status" aria-live="polite">{statusMessage}</p>
+              )}
+            </form>
+          </Reveal>
+        </div>
+        <BackToHome />
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section: Comunidade ─── */
+function ComunidadeSection() {
+  return (
+    <section id="comunidade" className="bg-black py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <div className="max-w-6xl mx-auto">
+        <Reveal>
+          <span className="text-white/40 text-xs tracking-[0.3em] uppercase">COMUNIDADE</span>
+        </Reveal>
+        <Reveal delay={100}>
+          <h2 className="mt-4 text-4xl md:text-5xl text-white max-w-xl"
+            style={{ fontFamily: "'Instrument Serif', serif" }}>
+            Para quem é a EBMU
+          </h2>
+        </Reveal>
+        <div className="mt-14 grid md:grid-cols-3 gap-6">
+          <Reveal delay={0}>
+            <article className="border border-white/10 rounded-2xl overflow-hidden flex flex-col h-full">
+              <img src="uploads/paraquempratica.png" alt="Para quem pratica" className="w-full aspect-[4/3] object-cover" />
+              <div className="p-7 flex flex-col gap-5 flex-1">
+                <h3 className="text-white text-sm font-medium tracking-[0.12em] uppercase">PARA QUEM PRATICA</h3>
+                <p className="text-white/70 text-sm leading-relaxed flex-1">
+                  Para quem deseja compreender e praticar mindfulness com profundidade, sem depender de explicações místicas ou promessas extraordinárias.
+                </p>
+              </div>
+            </article>
+          </Reveal>
+          <Reveal delay={100}>
+            <article className="border border-white/10 rounded-2xl overflow-hidden flex flex-col h-full">
+              <img src="uploads/paraquemestuda.png" alt="Para quem estuda" className="w-full aspect-[4/3] object-cover" />
+              <div className="p-7 flex flex-col gap-5 flex-1">
+                <h3 className="text-white text-sm font-medium tracking-[0.12em] uppercase">PARA QUEM ESTUDA</h3>
+                <p className="text-white/70 text-sm leading-relaxed flex-1">
+                  Para quem procura uma abordagem crítica, interessada nas evidências, nos limites do conhecimento e nas diferentes formas de compreender a experiência humana.
+                </p>
+              </div>
+            </article>
+          </Reveal>
+          <Reveal delay={200}>
+            <article className="border border-white/10 rounded-2xl overflow-hidden flex flex-col h-full">
+              <img src="uploads/paraquemtrabalhacompessoas.png" alt="Para quem trabalha com pessoas" className="w-full aspect-[4/3] object-cover" />
+              <div className="p-7 flex flex-col gap-5 flex-1">
+                <h3 className="text-white text-sm font-medium tracking-[0.12em] uppercase">PARA QUEM TRABALHA COM PESSOAS</h3>
+                <p className="text-white/45 text-xs leading-relaxed">
+                  Psicologia <span className="text-white/20">·</span> Medicina <span className="text-white/20">·</span> Enfermagem <span className="text-white/20">·</span> Fisioterapia <span className="text-white/20">·</span> Terapia Ocupacional <span className="text-white/20">·</span> Educação <span className="text-white/20">·</span> Yoga <span className="text-white/20">·</span> Educação Física <span className="text-white/20">·</span> Gestão
+                </p>
+                <p className="text-white/70 text-sm leading-relaxed flex-1">
+                  Para profissionais interessados em integrar conhecimentos sobre mindfulness à sua área de atuação, respeitando os limites de sua formação profissional.
+                </p>
+              </div>
+            </article>
+          </Reveal>
+        </div>
+        <div className="mt-14 grid md:grid-cols-3 gap-6">
+          <Reveal delay={0}>
+            <article className="border border-white/10 rounded-2xl p-7 flex flex-col gap-5 h-full">
+              <div className="flex gap-1" aria-label="5 estrelas">
+                {[...Array(5)].map((_, i) => <Star key={i} size={14} className="text-white/40" fill="rgba(255,255,255,0.4)" />)}
+              </div>
+              <blockquote className="text-white/70 text-sm leading-relaxed italic flex-1">
+                "A EBMU mudou completamente a minha relação com o estresse. O Metodologia N me deu ferramentas concretas para lidar com situações difíceis no dia a dia."
+              </blockquote>
+              <footer>
+                <div className="text-white text-sm font-medium">Mariana C.</div>
+                <div className="text-white/40 text-xs mt-0.5">Psicóloga</div>
+              </footer>
+            </article>
+          </Reveal>
+          <Reveal delay={100}>
+            <article className="border border-white/10 rounded-2xl p-7 flex flex-col gap-5 h-full">
+              <div className="flex gap-1" aria-label="5 estrelas">
+                {[...Array(5)].map((_, i) => <Star key={i} size={14} className="text-white/40" fill="rgba(255,255,255,0.4)" />)}
+              </div>
+              <blockquote className="text-white/70 text-sm leading-relaxed italic flex-1">
+                "Já tentei vários aplicativos de meditação, mas nada se compara à profundidade e ao cuidado da comunidade EBMU. Sinto que finalmente encontrei meu lugar."
+              </blockquote>
+              <footer>
+                <div className="text-white text-sm font-medium">Rafael S.</div>
+                <div className="text-white/40 text-xs mt-0.5">Engenheiro de Software</div>
+              </footer>
+            </article>
+          </Reveal>
+          <Reveal delay={200}>
+            <article className="border border-white/10 rounded-2xl p-7 flex flex-col gap-5 h-full">
+              <div className="flex gap-1" aria-label="5 estrelas">
+                {[...Array(5)].map((_, i) => <Star key={i} size={14} className="text-white/40" fill="rgba(255,255,255,0.4)" />)}
+              </div>
+              <blockquote className="text-white/70 text-sm leading-relaxed italic flex-1">
+                "Como professora, descobri no mindfulness baseado em evidências uma forma de cuidar da minha saúde emocional sem abrir mão do rigor científico."
+              </blockquote>
+              <footer>
+                <div className="text-white text-sm font-medium">Ana Paula M.</div>
+                <div className="text-white/40 text-xs mt-0.5">Educadora</div>
+              </footer>
+            </article>
+          </Reveal>
+        </div>
+        <BackToHome dark />
+      </div>
+    </section>
+  );
+}
+/* ─── Section: Planos ─── */
+const beneficiosMensal = [
+  "Acesso aos cursos e estudos da plataforma",
+  "Práticas guiadas",
+  "Materiais complementares",
+  "Novos conteúdos durante a vigência da assinatura",
+  "Certificados quando previstos no curso",
+];
+
+const beneficiosAnual = [
+  "Acesso aos cursos e estudos da plataforma",
+  "Práticas guiadas",
+  "Materiais complementares",
+  "Novos conteúdos durante os 12 meses",
+  "Certificados quando previstos no curso",
+];
+
+function PlanosSection() {
+  return (
+    <section id="planos" className="bg-black py-24 md:py-40 px-6 md:px-16 lg:px-24">
+      <div className="max-w-5xl mx-auto">
+        <Reveal>
+          <span className="text-white/40 text-xs tracking-[0.3em] uppercase">PLANOS</span>
+        </Reveal>
+        <Reveal delay={120}>
+          <h2 className="mt-3 text-5xl md:text-6xl text-white leading-none"
+            style={{ fontFamily: "'Instrument Serif', serif" }}>
+            Escolha como fazer parte da EBMU
+          </h2>
+        </Reveal>
+        <Reveal delay={200}>
+          <p className="mt-5 text-white/60 text-base md:text-lg max-w-2xl leading-relaxed">
+            Acesso à mesma plataforma e aos mesmos conteúdos. Escolha entre a flexibilidade do plano mensal ou a economia do plano anual.
+          </p>
+        </Reveal>
+
+        <Reveal delay={300} variant="scale">
+          <div className="mt-14 grid md:grid-cols-2 gap-5 lg:gap-6">
+            <div className="rounded-2xl overflow-hidden border border-white/[0.07] bg-[#003b71] shadow-[0_32px_80px_rgba(0,0,0,0.18)]">
+              <div className="p-10 md:p-12 lg:p-14 flex flex-col gap-8 h-full">
+                <div className="flex flex-col gap-3">
+                  <span className="text-white/35 text-[10px] tracking-[0.3em] uppercase">EBMU MENSAL</span>
+                  <p className="text-white/55 text-sm leading-relaxed max-w-xs">
+                    Acesso completo à EBMU com renovação mensal.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <div className="text-white leading-none"
+                    style={{ fontFamily: "'Instrument Serif', serif", fontSize: "clamp(2.5rem, 7vw, 4rem)" }}>
+                    R$ 285/mês
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3 pt-2">
+                  <a href="https://pay.hotmart.com/XI07217288T?off=arfnhycl" target="_blank" rel="noopener noreferrer" className="rounded-full bg-white text-stone-900 px-7 py-3.5 text-sm font-medium hover:bg-stone-100 transition-colors flex items-center justify-center gap-2">
+                    QUERO O PLANO MENSAL <ArrowRight size={14} />
+                  </a>
+                  <p className="text-white/25 text-xs text-center">
+                    Renovação mensal. Cancele as próximas renovações quando quiser.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-5 pt-2 border-t border-white/[0.07]">
+                  <span className="text-white/35 text-[10px] tracking-[0.3em] uppercase">O que está incluído</span>
+                  <ul className="flex flex-col gap-4">
+                    {beneficiosMensal.map((b) => (
+                      <li key={b} className="flex items-start gap-3.5">
+                        <Check size={13} className="text-white/35 mt-0.5 flex-shrink-0" />
+                        <span className="text-white/60 text-sm leading-relaxed">{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl overflow-hidden border border-[#d8c29a]/20 bg-[#a32035] shadow-[0_32px_80px_rgba(0,0,0,0.18)] relative">
+              <div className="absolute right-5 top-5 rounded-full border border-[#d8c29a]/30 bg-[#d8c29a]/10 px-2.5 py-1 text-[9px] tracking-[0.22em] uppercase text-[#efe1c5]">
+                MAIOR ECONOMIA
+              </div>
+              <div className="p-10 md:p-12 lg:p-14 flex flex-col gap-8 h-full pt-14">
+                <div className="flex flex-col gap-3">
+                  <span className="text-white/35 text-[10px] tracking-[0.3em] uppercase">EBMU ANUAL</span>
+                  <p className="text-white/55 text-sm leading-relaxed max-w-xs">
+                    12 meses de acesso completo à EBMU.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <div className="text-white leading-none"
+                    style={{ fontFamily: "'Instrument Serif', serif", fontSize: "clamp(2.5rem, 7vw, 4rem)" }}>
+                    R$ 2.397/ano
+                  </div>
+                  <span className="text-white/55 text-sm">Equivalente a R$ 199,75/mês</span>
+                </div>
+
+                <div className="flex flex-col gap-3 pt-2">
+                  <p className="text-[#efe1c5] text-sm leading-relaxed">
+                    Economize R$ 1.023 em relação a 12 mensalidades.
+                  </p>
+                  <a href="https://pay.hotmart.com/XI07217288T?off=x9p916bq" target="_blank" rel="noopener noreferrer" className="rounded-full bg-white text-stone-900 px-7 py-3.5 text-sm font-medium hover:bg-stone-100 transition-colors flex items-center justify-center gap-2">
+                    QUERO O PLANO ANUAL <ArrowRight size={14} />
+                  </a>
+                </div>
+
+                <div className="flex flex-col gap-5 pt-2 border-t border-white/[0.07]">
+                  <span className="text-white/35 text-[10px] tracking-[0.3em] uppercase">O que está incluído</span>
+                  <ul className="flex flex-col gap-4">
+                    {beneficiosAnual.map((b) => (
+                      <li key={b} className="flex items-start gap-3.5">
+                        <Check size={13} className="text-[#efe1c5] mt-0.5 flex-shrink-0" />
+                        <span className="text-white/60 text-sm leading-relaxed">{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+        <BackToHome dark />
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section: Loja ─── */
+function LojaSection() {
+  return (
+    <section id="loja" className="bg-black py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <div className="max-w-6xl mx-auto">
+        <Reveal>
+          <span className="text-white/40 text-xs tracking-[0.3em] uppercase">LOJA</span>
+        </Reveal>
+        <div className="mt-4 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <Reveal delay={100}>
+            <h2 className="text-4xl md:text-5xl text-white max-w-xl"
+              style={{ fontFamily: "'Instrument Serif', serif" }}>
+              Para levar com você.
+            </h2>
+          </Reveal>
+        </div>
+
+        <div className="mt-14 grid md:grid-cols-2 gap-5">
+          <Reveal>
+            <a href="https://www.amazon.com.br/PHANTOGRAMA-Portuguese-Rodrigo-Diniz/dp/650185671X" target="_blank" rel="noopener noreferrer"
+              className="store-visual-card group block cursor-pointer transition-transform duration-300 hover:-translate-y-0.5">
+              <img
+                src="uploads/bannerphantograma.png"
+                alt="PHANTOGRAMA — romance de Rodrigo Diniz. Comprar na Amazon."
+                loading="lazy"
+                decoding="async"
+                className="block w-full"
+              />
+            </a>
+          </Reveal>
+          <Reveal delay={90} variant="fade">
+            <div className="store-visual-card store-visual-card--soon">
+              <img
+                src="uploads/soon.png"
+                alt="A Loja EBMU está em expansão. Novas publicações, materiais e produtos serão adicionados em breve."
+                loading="lazy"
+                decoding="async"
+                className="block w-full"
+              />
+            </div>
+          </Reveal>
+        </div>
+        <BackToHome dark />
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section: Atividades ─── */
+function AtividadesSection() {
+  return (
+    <section id="atividades" className="bg-white py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <div className="max-w-6xl mx-auto">
+        <Reveal>
+          <span className="text-black/40 text-xs tracking-[0.3em] uppercase">ATIVIDADES</span>
+        </Reveal>
+        <div className="mt-4 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <Reveal delay={100}>
+            <h2 className="text-4xl md:text-5xl text-black max-w-3xl"
+              style={{ fontFamily: "'Instrument Serif', serif" }}>
+              Conteúdos para diferentes momentos da sua jornada.
+            </h2>
+          </Reveal>
+        </div>
+
+        <div className="mt-14 grid gap-5 md:grid-cols-2 items-start">
+          <Reveal delay={140}>
+            <article className="border border-black/10 rounded-[1.75rem] bg-white overflow-hidden self-start">
+              <img
+                src="uploads/Curso 1 card oficial.png.png"
+                alt="Curso 1 — curso contínuo de Rodrigo Diniz sobre meditação e mindfulness no contexto clínico e na vida cotidiana."
+                loading="lazy"
+                decoding="async"
+                className="block w-full h-auto"
+                style={{ display: 'block', width: '100%', height: 'auto' }}
+              />
+            </article>
+          </Reveal>
+
+          <Reveal delay={220}>
+            <article className="border border-black/10 rounded-[1.75rem] bg-white overflow-hidden self-start">
+              <img
+                src="uploads/Curso 2 card oficial.png.png"
+                alt="Mindfulness para Profissionais da Saúde — curso de aprofundamento em mindfulness para profissionais e estudantes de áreas da saúde."
+                loading="lazy"
+                decoding="async"
+                className="block w-full h-auto"
+                style={{ display: 'block', width: '100%', height: 'auto' }}
+              />
+            </article>
+          </Reveal>
+        </div>
+        <BackToHome />
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section: Perguntas Frequentes ─── */
+const faqs = [
+  { q: "Preciso ter experiência prévia em meditação?", a: "Não necessariamente. A EBMU oferece conteúdos para diferentes níveis de experiência. Quando um curso exigir conhecimentos ou experiência prévios, essa informação será indicada em sua apresentação." },
+  { q: "Os cursos são destinados apenas a profissionais?", a: "Não. A EBMU reúne conteúdos destinados a praticantes e profissionais. O público, os objetivos e eventuais conhecimentos prévios recomendados são apresentados na descrição de cada curso." },
+  { q: "Os cursos têm certificado de conclusão?", a: "Quando prevista na oferta do curso, a EBMU poderá emitir certificado de participação ou conclusão de curso livre, conforme os critérios informados na respectiva apresentação. Os certificados não constituem diploma de graduação ou pós-graduação, título acadêmico ou habilitação para o exercício de profissão regulamentada." },
+  { q: "Posso acessar o conteúdo no meu próprio ritmo?", a: "Os cursos gravados podem ser realizados de acordo com o ritmo de cada participante, observadas as condições e o período de acesso informados na oferta de cada curso. Atividades ao vivo, quando houver, poderão seguir calendário próprio." },
+  { q: "O que diferencia a abordagem de mindfulness baseada em evidências?", a: "A EBMU procura aproximar a prática de mindfulness do conhecimento produzido pela pesquisa científica, considerando evidências, limitações e contextos de aplicação. Protocolos amplamente estudados, como MBSR e MBCT, fazem parte desse campo, assim como pesquisas em Psicologia, saúde e ciências contemplativas. A EBMU evita promessas que ultrapassem o que as evidências disponíveis permitem sustentar." },
+  { q: "Onde acesso os cursos da EBMU?", a: "Os cursos da EBMU são acessados online pela área de membros da Hotmart. Após a inscrição ou compra, você recebe as informações necessárias para acessar o conteúdo." },
+  { q: "Como funcionam cancelamentos e reembolsos?", a: "Você pode solicitar o reembolso em até 7 dias após a compra. As compras da EBMU são processadas pela Hotmart, e a solicitação de reembolso é realizada pelos canais disponibilizados pela plataforma. Quando aplicável, o valor é devolvido pela própria Hotmart de acordo com a forma de pagamento utilizada na compra." },
+  { q: "A EBMU é uma universidade reconhecida pelo MEC?", a: "A denominação Evidence-Based Mindfulness University é o nome da plataforma. A EBMU não se apresenta como instituição de ensino superior credenciada pelo Ministério da Educação (MEC). Seus cursos são oferecidos na modalidade de cursos livres, conforme indicado em cada oferta." },
+  { q: "Os cursos da EBMU substituem acompanhamento psicológico ou médico?", a: "Não. Os conteúdos da EBMU têm finalidade educacional e informativa e não substituem avaliação, diagnóstico, tratamento ou acompanhamento realizado por profissionais de saúde habilitados." },
+  { q: "Como funciona a assinatura da EBMU?", a: "A EBMU oferece um plano anual, com 12 meses de acesso à plataforma. Durante esse período, você pode acessar os conteúdos incluídos no plano e acompanhar os novos conteúdos disponibilizados durante a vigência da assinatura." },
+  { q: "Novos conteúdos estão incluídos na assinatura?", a: "Sim. Durante a vigência da assinatura, você terá acesso aos novos conteúdos publicados na plataforma que façam parte do Plano Anual EBMU." },
+  { q: "Posso cancelar minha assinatura?", a: "Sim. A assinatura pode ser cancelada pelos canais disponibilizados pela Hotmart. O cancelamento interrompe as cobranças futuras, mas não corresponde, por si só, ao reembolso de valores já pagos. As condições de acesso após o cancelamento dependem da situação da assinatura e da modalidade de pagamento utilizada." },
+  { q: "Existe uma ordem obrigatória para realizar os cursos?", a: "Não necessariamente. A EBMU reúne diferentes conteúdos e percursos de aprendizagem. Quando houver uma sequência recomendada ou pré-requisitos para determinado curso, essa orientação será apresentada na própria plataforma." },
+];
+
+function PerguntasSection() {
+  const [aberta, setAberta] = useState(null);
+  return (
+    <section id="perguntas" className="bg-white py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <div className="max-w-3xl mx-auto">
+        <Reveal>
+          <span className="text-black/40 text-xs tracking-[0.3em] uppercase">Perguntas Frequentes</span>
+        </Reveal>
+        <Reveal delay={100}>
+          <h2 className="mt-4 text-4xl md:text-5xl text-black"
+            style={{ fontFamily: "'Instrument Serif', serif" }}>
+            Tire suas dúvidas
+          </h2>
+        </Reveal>
+        <div className="mt-12 flex flex-col divide-y divide-black/10">
+          {faqs.map(({ q, a }, i) => (
+            <Reveal key={i} delay={i * 60}>
+              <div>
+                <button
+                  className="w-full flex items-center justify-between gap-6 py-5 text-left"
+                  onClick={() => setAberta(aberta === i ? null : i)}
+                >
+                  <span className="text-black/80 text-base leading-snug">{q}</span>
+                  <span className="text-black/40 text-xl flex-shrink-0 transition-transform duration-300"
+                    style={{ transform: aberta === i ? "rotate(45deg)" : "none" }}>+</span>
+                </button>
+                <div style={{
+                  maxHeight: aberta === i ? "200px" : "0",
+                  overflow: "hidden",
+                  transition: "max-height 0.35s cubic-bezier(0.16,1,0.3,1)",
+                }}>
+                  <p className="pb-5 text-black/60 text-sm leading-relaxed">{a}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <BackToHome />
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section: Contato ─── */
+function ContatoSection() {
+  const [form, setForm] = useState({ nome: "", email: "", assunto: "", mensagem: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setStatusMessage("");
+
+    const formEl = e.currentTarget;
+    const isValid = formEl.checkValidity();
+    if (!isValid) {
+      formEl.reportValidity();
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("https://formspree.io/f/mrpbgjow", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: new FormData(formEl),
+      });
+
+      if (!response.ok) {
+        throw new Error("Formspree request failed");
+      }
+
+      setStatusMessage("Mensagem enviada com sucesso. Obrigado pelo contato.");
+      setForm({ nome: "", email: "", assunto: "", mensagem: "" });
+      formEl.reset();
+    } catch (error) {
+      setStatusMessage("Não foi possível enviar a mensagem. Tente novamente em alguns instantes.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const inputCls = "bg-white/5 border border-white/15 rounded-2xl px-4 py-3 text-white placeholder:text-white/40 text-sm outline-none focus:border-white/35 transition-colors w-full";
+  return (
+    <section id="contato" className="bg-black py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-start">
+        <div>
+          <Reveal>
+            <span className="text-white/40 text-xs tracking-[0.3em] uppercase">Contato</span>
+          </Reveal>
+          <Reveal delay={100}>
+            <h2 className="mt-4 text-4xl md:text-5xl text-white leading-tight"
+              style={{ fontFamily: "'Instrument Serif', serif" }}>
+              Fale com a gente
+            </h2>
+          </Reveal>
+          <Reveal delay={180}>
+            <p className="mt-6 text-white/60 text-base leading-relaxed max-w-sm">
+              Tem dúvidas sobre os cursos, planos ou parcerias? Entre em contato.
+            </p>
+          </Reveal>
+          <Reveal delay={260}>
+            <div className="mt-10 flex flex-col gap-4">
+              <a href="mailto:ebmu.plataforma@gmail.com"
+                className="flex items-center gap-3 text-white/70 text-sm hover:text-white transition-colors">
+                <span className="w-8 h-8 rounded-full border border-white/15 flex items-center justify-center text-white/40">@</span>
+                ebmu.plataforma@gmail.com
+              </a>
+            </div>
+          </Reveal>
+        </div>
+
+        <Reveal delay={120} variant="fadeUp">
+          <form className="flex flex-col gap-4" onSubmit={submit}>
+            <div className="grid grid-cols-2 gap-4">
+              <input name="nome" value={form.nome} onChange={set("nome")} placeholder="Seu nome" className={inputCls} required />
+              <input name="email" value={form.email} onChange={set("email")} placeholder="Seu e-mail" type="email" className={inputCls} required />
+            </div>
+            <input name="assunto" value={form.assunto} onChange={set("assunto")} placeholder="Assunto" className={inputCls} required />
+            <textarea name="mensagem" value={form.mensagem} onChange={set("mensagem")} placeholder="Sua mensagem"
+              rows={5} className={`${inputCls} resize-none`} required />
+            <button type="submit" disabled={isSubmitting}
+              className="mt-1 bg-white text-black rounded-full px-6 py-3 text-sm font-medium hover:bg-white/90 transition-colors flex items-center justify-center gap-2 self-start disabled:opacity-70 disabled:cursor-not-allowed">
+              {isSubmitting ? "ENVIANDO..." : <>Enviar mensagem <ArrowRight size={15} /></>}
+            </button>
+            {statusMessage && (
+              <p className="text-white/70 text-sm mt-1" role="status" aria-live="polite">
+                {statusMessage}
+              </p>
+            )}
+          </form>
+        </Reveal>
+      </div>
+      <BackToHome dark />
+    </section>
+  );
+}
+
+/* ─── Footer ─── */
+function FooterSection() {
+  return (
+    <footer className="bg-black border-t border-white/10 py-16 px-6 md:px-16 lg:px-24">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-4 lg:grid-cols-[1.35fr_1fr_1fr_1fr] gap-10 lg:gap-14">
+          <div>
+            <img src="uploads/logoredimensionado.png" alt="EBM University" className="h-10 w-auto mb-4" />
+            <p className="text-white/40 text-sm leading-relaxed max-w-sm">
+              A maior plataforma de mindfulness do Brasil.
+            </p>
+            <div className="flex flex-col items-start gap-4 mt-6">
+              <a href="https://www.instagram.com/ebmuniversity" target="_blank" rel="noopener noreferrer" aria-label="Instagram EBMU" className="flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-xs">
+                <Instagram size={18} />
+                <span>EBMU - Evidence-Based Mindfulness University</span>
+              </a>
+              <a href="https://www.instagram.com/psicologiabaseadaemevidencias" target="_blank" rel="noopener noreferrer" aria-label="Instagram Psicologia Baseada em Evidências" className="flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-xs">
+                <Instagram size={18} />
+                <span>Psicologia Baseada em Evidências</span>
+              </a>
+            </div>
+          </div>
+          <div>
+            <div className="text-white/30 text-xs tracking-widest uppercase mb-4">Plataforma</div>
+            <ul className="flex flex-col gap-3">
+              {[
+                ["A EBMU", "#a-ebmu"], ["Por Dentro", "#por-dentro"], ["Comunidade", "#comunidade"],
+                ["Atividades", "#atividades"], ["Planos", "#planos"], ["Perguntas frequentes", "#perguntas"],
+              ].map(([l, h]) => (
+                <li key={l}><a href={h} className="text-white/50 text-sm hover:text-white/80 transition-colors">{l}</a></li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="text-white/30 text-xs tracking-widest uppercase mb-4">Explorar</div>
+            <ul className="flex flex-col gap-3">
+              {[
+                ["Rodrigo Diniz", "#rodrigo-diniz"], ["Metodologia N", "#metodo-n"], ["Loja", "#loja"],
+              ].map(([l, h]) => (
+                <li key={l}><a href={h} className="text-white/50 text-sm hover:text-white/80 transition-colors">{l}</a></li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="text-white/30 text-xs tracking-widest uppercase mb-4">Contato</div>
+            <ul className="flex flex-col gap-3">
+              {[["Imprensa", "imprensa.html"], ["Parcerias", "parcerias.html"]].map(([l, h]) => (
+                <li key={l}><a href={h} target="_blank" rel="noopener noreferrer" onClick={(event) => { event.preventDefault(); window.open(h, "_blank", "popup=yes,width=1280,height=900,resizable=yes,scrollbars=yes"); }} className="text-white/50 text-sm hover:text-white/80 transition-colors">{l}</a></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="mt-14 pt-10 border-t border-white/10 max-w-4xl">
+          <p className="text-white/55 text-sm leading-relaxed">
+            Precisa de ajuda? Entre em contato com o suporte:{" "}
+            <a href="mailto:ebmu.plataforma@gmail.com" className="text-white/80 hover:text-white transition-colors">
+              ebmu.plataforma@gmail.com
+            </a>
+          </p>
+          <h2 className="mt-8 text-white/70 text-xs tracking-[0.25em] uppercase">Informações importantes</h2>
+          <div className="mt-4 space-y-4 text-white/40 text-xs leading-relaxed">
+            <p>
+              Os cursos oferecidos pela EBMU são cursos livres, de caráter educacional e de educação continuada. Não constituem cursos de graduação, licenciatura, pós-graduação ou habilitação profissional e não conferem autorização para o exercício de profissões regulamentadas.
+            </p>
+            <p>
+              Os conteúdos relacionados à saúde e ao bem-estar têm finalidade educacional e informativa e não substituem avaliação, diagnóstico, tratamento ou acompanhamento realizado por profissionais de saúde habilitados.
+            </p>
+          </div>
+        </div>
+        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-4">
+          <p className="text-white/25 text-xs">© 2026 Evidence-Based Mindfulness University. Todos os direitos reservados.</p>
+          <div className="flex gap-6">
+            <a href="privacidade.html" target="_blank" rel="noopener noreferrer" onClick={(event) => { event.preventDefault(); window.open("privacidade.html", "_blank", "popup=yes,width=1280,height=900,resizable=yes,scrollbars=yes"); }} className="text-white/25 text-xs hover:text-white/50 transition-colors">Privacidade</a>
+            <a href="termos.html" target="_blank" rel="noopener noreferrer" onClick={(event) => { event.preventDefault(); window.open("termos.html", "_blank", "popup=yes,width=1280,height=900,resizable=yes,scrollbars=yes"); }} className="text-white/25 text-xs hover:text-white/50 transition-colors">Termos</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ─── App ─── */
+function App() {
+  const [newsletterName, setNewsletterName] = useState("");
+  const [email, setEmail] = useState("");
+  const [newsletterSubmitting, setNewsletterSubmitting] = useState(false);
+  const [newsletterFeedback, setNewsletterFeedback] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const mobileNavLinks = [
+    ["#a-ebmu", "A EBMU"], ["#rodrigo-diniz", "Rodrigo Diniz"], ["#por-dentro", "Por Dentro"],
+    ["#planos", "Planos"], ["#atividades", "Atividades"], ["#metodo-n", "Metodologia N"],
+    ["#loja", "Loja"], ["#comunidade", "Comunidade"], ["#perguntas", "Perguntas Frequentes"], ["#contato", "Contato"],
+  ];
+
+  useEffect(() => {
+    const portal  = document.querySelector('.light-portal');
+    const flash   = document.querySelector('.light-flash');
+    const ray     = document.querySelector('.light-ray');
+    const content = document.querySelector('.hero-content');
+    const videoEl = document.getElementById('hero-video');
+    const handle = () => {
+      const vh = window.innerHeight;
+      const s  = window.scrollY;
+      // Build-up: portal (0→35%), flash (28→48%), ray mid-flash
+      const gradP  = Math.min(1, Math.max(0, s / (vh * 0.35)));
+      const flashP = Math.min(1, Math.max(0, (s - vh * 0.28) / (vh * 0.2)));
+      const rawRay = flashP < 0.25 ? 0
+        : flashP < 0.65 ? (flashP - 0.25) / 0.4
+        : (1 - (flashP - 0.65) / 0.35);
+      const rayP = Math.max(0, Math.min(1, rawRay));
+      // Fade-down only after white gap covers the full top — video never reappears
+      const fadeOut = Math.min(1, Math.max(0, (s - vh * 1.0) / (vh * 0.20)));
+      const m = 1 - fadeOut;
+      // Hero text disappears fast; video blurs with flash
+      const textP  = Math.max(0, 1 - (s / (vh * 0.18)) * 1.5);
+      scrollFlashP = flashP * m;
+      if (window.innerWidth < 768) {
+        // Mobile: hero scrolls normally, no flash/fade effects
+        scrollFlashP = 0;
+        if (portal)  portal.style.opacity  = "0";
+        if (flash)   flash.style.opacity   = "0";
+        if (ray)     ray.style.opacity     = "0";
+        if (content) content.style.opacity = "1";
+        if (videoEl) videoEl.style.filter  = "";
+        return;
+      }
+      if (portal)  portal.style.opacity  = (gradP  * m).toString();
+      if (flash)   flash.style.opacity   = (flashP * m).toString();
+      if (ray)     ray.style.opacity     = (rayP   * m).toString();
+      if (content) content.style.opacity = textP.toString();
+      if (videoEl) videoEl.style.filter  = `blur(${(flashP * m * 8).toFixed(1)}px)`;
+    };
+    window.addEventListener('scroll', handle, { passive: true });
+    window.addEventListener('resize', handle);
+    handle();
+    return () => { window.removeEventListener('scroll', handle); window.removeEventListener('resize', handle); };
+  }, []);
+  return (
+    <>
+      {/* Hero — sticky so the video backdrop stays visible as sections scroll over */}
+      <div className="hero-shell relative overflow-hidden" style={{ position: 'sticky', top: 0, height: '100vh', zIndex: 0 }}>
+        <HeroVideo />
+        <Snow />
+        <div className="light-portal" />
+        <div className="light-flash" />
+        <div className="light-ray" />
+        <div className="hero-content relative z-10 flex flex-col min-h-screen">
+          <nav className="relative z-20 px-6 md:px-8 py-6">
+            <div className="flex items-center justify-between gap-8">
+              <div className="flex items-center gap-8 max-md:shrink-0">
+                <div className="flex items-center text-white font-semibold text-lg max-md:shrink-0">
+                  <img src="uploads/fundoremovido2.png" alt="EBM University" className="h-10 w-auto" />
+                </div>
+                <div className="hidden md:flex items-center gap-6">
+                  <a href="#a-ebmu"       className="text-white/80 hover:text-white transition-colors text-base font-medium">A EBMU</a>
+                  <a href="#rodrigo-diniz" className="text-white/80 hover:text-white transition-colors text-base font-medium">Rodrigo Diniz</a>
+                  <a href="#por-dentro"   className="text-white/80 hover:text-white transition-colors text-base font-medium">Por Dentro</a>
+                  <a href="#planos"       className="text-white/80 hover:text-white transition-colors text-base font-medium">Planos</a>
+                  <a href="#atividades"   className="text-white/80 hover:text-white transition-colors text-base font-medium">Atividades</a>
+                  <a href="#metodo-n"     className="text-white/80 hover:text-white transition-colors text-base font-medium">Metodologia N</a>
+                  <a href="#loja"         className="text-white/80 hover:text-white transition-colors text-base font-medium">Loja</a>
+                  <a href="#comunidade"   className="text-white/80 hover:text-white transition-colors text-base font-medium">Comunidade</a>
+                  <a href="#perguntas"    className="text-white/80 hover:text-white transition-colors text-base font-medium">Perguntas Frequentes</a>
+                  <a href="#contato"      className="text-white/80 hover:text-white transition-colors text-base font-medium">Contato</a>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-4 mr-2 lg:mr-4 w-full max-w-sm">
+                <button type="button" className="md:hidden text-white p-1" aria-label={menuOpen ? "Fechar menu" : "Abrir menu"} aria-expanded={menuOpen} aria-controls="mobile-menu"
+                  onClick={() => setMenuOpen((o) => !o)}>
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    {menuOpen ? <><path d="M6 6l12 12"/><path d="M18 6L6 18"/></> : <><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></>}
+                  </svg>
+                </button>
+                <a
+                  href="https://sso.hotmart.com/login?service=https%3A%2F%2Fsso.hotmart.com%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Db432cdd3-eb60-46bd-892b-5b450a65153e%26scope%3Dopenid%2Bprofile%2Bauthorities%2Bemail%2Bresources%2Buser%26redirect_uri%3Dhttps%253A%252F%252Fhotmart.com%252Fpt-br%252Fclub%252Febmu%252Fauth%252Flogin%253Frealm%253Dclub%26response_type%3Dcode%26response_mode%3Dquery%26state%3Dd76ed896a48341a5848a4507c6476417%26code_challenge%3DYFblDZHn9ui6olQGq80Y419-S692jqvcTvmyWZHHGsQ%26code_challenge_method%3DS256%26client_name%3DCasOAuthClient"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg px-[13px] py-[7px] bg-transparent text-white text-[13px] font-medium border border-white/80 shadow-none hover:bg-white/[0.08] hover:border-white/95 focus-visible:bg-white/[0.08] focus-visible:border-white/95 focus-visible:outline-none transition-colors duration-200 inline-block text-center whitespace-nowrap"
+                >
+                  Login
+                </a>
+              </div>
+            </div>
+            {menuOpen && (
+              <div id="mobile-menu" className="md:hidden absolute left-4 right-4 top-full z-30 bg-black/85 backdrop-blur-md rounded-2xl p-3 flex flex-col max-h-[70vh] overflow-y-auto">
+                {mobileNavLinks.map(([href, label]) => (
+                  <a key={href} href={href} onClick={() => setMenuOpen(false)}
+                    className="text-white/80 hover:text-white transition-colors text-base font-medium px-3 py-3 border-b border-white/10 last:border-b-0">{label}</a>
+                ))}
+              </div>
+            )}
+          </nav>
+
+          <main className="relative z-10 flex-1 grid grid-cols-[auto_1fr_auto] grid-rows-[auto_auto] gap-x-8 gap-y-4 items-stretch content-center px-6 md:px-8 py-12 max-md:pt-4 max-[360px]:py-4 -translate-y-[8%] max-md:translate-y-0">
+            <img src="uploads/fundoremovido2.png" alt="EBM University"
+              className="row-start-1 col-start-1 max-md:col-span-3 max-md:w-full max-md:ml-0 object-contain w-56 md:w-72 lg:w-80 h-auto -ml-1 self-end" />
+
+            <div className="row-start-2 col-start-1 max-md:col-span-3 flex flex-col items-start text-left max-w-md max-md:max-w-none md:max-w-lg gap-4 justify-start">
+              <div className="text-white/90 text-xs md:text-sm leading-relaxed space-y-3">
+                <p className="font-semibold">A maior plataforma de mindfulness do Brasil.</p>
+                <p>
+                  Dedicada ao estudo e à prática do mindfulness baseado em evidências científicas, a EBMU é um ambiente de aprendizagem contínua que integra ciência, prática e reflexão crítica.
+                </p>
+                <p>
+                  Uma proposta educacional que explora as relações entre consciência, sofrimento psicológico e autorregulação emocional, promovendo uma compreensão mais profunda da experiência humana.
+                </p>
+              </div>
+            </div>
+
+            <div className="row-start-1 row-span-2 col-start-3 flex max-md:row-start-3 max-md:row-span-1 max-md:col-start-1 max-md:col-span-3 max-md:max-w-none max-md:mr-0 max-md:mt-6 bg-black/80 backdrop-blur-md rounded-2xl p-6 lg:p-7 w-full max-w-sm flex-col gap-4 text-left mr-2 lg:mr-4 self-stretch justify-between mt-[74px] lg:mt-[82px]">
+              <div className="flex flex-col gap-1">
+                <h2 className="text-2xl lg:text-3xl text-white tracking-tight"
+                  style={{ fontFamily: "'Instrument Serif', serif" }}>
+                  Receba nossa newsletter
+                </h2>
+                <div className="flex flex-col gap-4">
+                  <p className="text-white/80 text-sm leading-relaxed">Entre no fluxo da EBMU.</p>
+                  <p className="text-white/80 text-sm leading-relaxed">Você receberá orientações, novidades da comunidade, materiais para manter conexão conosco, práticas, reflexões, encontros, informações sobre nossos eventos e conteúdos sobre mindfulness baseado em evidências.</p>
+                </div>
+              </div>
+              <form className="flex flex-col gap-3" onSubmit={(e) => {
+                e.preventDefault();
+                if (newsletterSubmitting) return;
+                const form = e.currentTarget;
+                const emailInput = form.elements.namedItem("email");
+                if (!newsletterName.trim() || !email.trim() || !emailInput.checkValidity()) {
+                  setNewsletterFeedback({ type: "error", message: "Preencha seu nome e um e-mail válido." });
+                  return;
+                }
+                setNewsletterSubmitting(true);
+                setNewsletterFeedback(null);
+                const data = new FormData();
+                data.append("nome", newsletterName.trim());
+                data.append("email", email.trim());
+                data.append("origem", "newsletter-ebmu");
+                fetch("https://formspree.io/f/xrpbgjrw", {
+                  method: "POST",
+                  headers: { Accept: "application/json" },
+                  body: data,
+                })
+                  .then((response) => {
+                    if (!response.ok) throw new Error("Formspree request failed");
+                    setNewsletterName("");
+                    setEmail("");
+                    setNewsletterFeedback({ type: "success", message: "Cadastro realizado com sucesso. Bem-vindo à newsletter da EBMU." });
+                  })
+                  .catch(() => {
+                    setNewsletterFeedback({ type: "error", message: "Não foi possível realizar o cadastro. Tente novamente." });
+                  })
+                  .finally(() => setNewsletterSubmitting(false));
+              }}>
+                <label htmlFor="newsletter-name" className="sr-only">Seu nome</label>
+                <input id="newsletter-name" name="nome" type="text" placeholder="Seu nome" value={newsletterName} onChange={(e) => setNewsletterName(e.target.value)} required
+                  className="bg-white/5 border border-white/15 rounded-full px-4 py-2.5 text-white placeholder:text-white/40 text-sm outline-none focus:border-white/40 transition-colors" />
+                <label htmlFor="newsletter-email" className="sr-only">Seu e-mail</label>
+                <input id="newsletter-email" name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Seu e-mail" required autoComplete="email"
+                  className="bg-white/5 border border-white/15 rounded-full px-4 py-2.5 text-white placeholder:text-white/40 text-sm outline-none focus:border-white/40 transition-colors" />
+                <button type="submit" disabled={newsletterSubmitting}
+                  className="bg-white text-black rounded-full px-5 py-2.5 text-sm font-medium hover:bg-white/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                  {newsletterSubmitting ? "Cadastrando..." : <>Inscrever-se <ArrowRight size={16} /></>}
+                </button>
+                {newsletterFeedback && (
+                  <p role={newsletterFeedback.type === "error" ? "alert" : "status"} className={newsletterFeedback.type === "error" ? "text-red-200 text-xs leading-relaxed" : "text-white/80 text-xs leading-relaxed"}>
+                    <span>{newsletterFeedback.message}</span>
+                  </p>
+                )}
+              </form>
+            </div>
+          </main>
+        </div>
+      </div>
+
+      {/* Sections scroll over the sticky hero backdrop; gaps reveal it between panels */}
+      <div className="sections-wrapper" style={{ position: 'relative', zIndex: 1 }}>
+        <SectionGap height="36vh" background="#fff" className="hero-to-sobre-gap" />
+        <SobreSection />
+        <SectionGap />
+        <RodrigoDinizSection />
+        <SectionGap />
+        <PorDentroSection />
+        <SectionGap />
+        <PlanosSection />
+        <SectionGap />
+        <AtividadesSection />
+        <SectionGap />
+        <ComunidadeSection />
+        <SectionGap />
+        <MetodoNSection />
+        <SectionGap />
+        <LojaSection />
+        <SectionGap />
+        <PerguntasSection />
+        <SectionGap />
+        <ContatoSection />
+        <FooterSection />
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+</script>
+</body>
+</html>

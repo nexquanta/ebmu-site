@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/png" href="../uploads/logoredimensionado.png" />
+<title>Novidades | EBMU — Evidence-Based Mindfulness University</title>
+<meta name="description" content="Arquivo de novidades, atualizações e bastidores da Evidence-Based Mindfulness University." />
+<link rel="canonical" href="index.html" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="../institucional.css" />
+<style>
+  .noticias-grid { display: grid; gap: 1.75rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); margin-top: 3rem; }
+  .noticia-card { background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 1rem; overflow: hidden; display: flex; flex-direction: column; }
+  .noticia-card img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .noticia-card-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.65rem; flex: 1; }
+  .noticia-meta { color: rgba(0,0,0,0.4); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; display: flex; gap: 0.5rem; align-items: center; }
+  .noticia-card h3 { color: #000; font-size: 1.05rem; font-weight: 500; line-height: 1.35; margin: 0; }
+  .noticia-card p { color: rgba(0,0,0,0.55); font-size: 0.9rem; line-height: 1.6; flex: 1; }
+  .noticia-card a.ler-mais { color: #000; font-size: 0.85rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; width: fit-content; }
+  .noticia-card a.ler-mais:hover { gap: 0.55rem; }
+  .noticias-empty { border: 1px solid rgba(0,0,0,0.1); border-radius: 1rem; padding: 4rem 2rem; text-align: center; color: rgba(0,0,0,0.4); font-size: 0.9rem; margin-top: 3rem; }
+</style>
+</head>
+<body style="background:#fff;">
+<header class="page-header page-header--minimal px-6 md:px-8 py-6" style="display:flex;">
+  <nav class="max-w-6xl mx-auto w-full" aria-label="Navegação principal">
+    <div class="flex items-center justify-between gap-8">
+      <a href="../Hero.html" class="flex items-center text-black font-semibold text-lg" aria-label="Voltar para a Home da EBMU">
+        <img src="../uploads/logoredimensionado.png" alt="EBM University" class="h-10 w-auto" />
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main class="page-main px-6 md:px-16 lg:px-24 py-24 md:py-32">
+  <article class="mx-auto" style="max-width: 1100px;">
+    <header>
+      <p class="text-black/40 text-xs tracking-[0.3em] uppercase">EBMU / Por Dentro</p>
+      <h1 class="mt-5 text-5xl md:text-6xl text-black" style="font-family: 'Instrument Serif', serif; font-weight: 400;">Novidades da EBMU</h1>
+      <p class="mt-6 text-black/60 text-lg leading-relaxed">Arquivo completo de novidades, atualizações e bastidores da plataforma, da mais recente para a mais antiga.</p>
+    </header>
+
+    <div id="noticias-grid" class="noticias-grid" hidden></div>
+    <div id="noticias-empty" class="noticias-empty" hidden>Em breve, novidades da EBMU por aqui.</div>
+
+    <p class="mt-14"><a href="../Hero.html#por-dentro" class="text-black/70 hover:text-black text-sm font-medium">&larr; Voltar para a Home</a></p>
+  </article>
+</main>
+
+<footer class="site-footer bg-black py-16 px-6 md:px-16 lg:px-24">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-4 lg:grid-cols-[1.35fr_1fr_1fr_1fr] gap-10 lg:gap-14">
+      <div>
+        <a href="../Hero.html" aria-label="Voltar para a Home da EBMU"><img src="../uploads/logoredimensionado.png" alt="EBM University" class="h-10 w-auto mb-4" /></a>
+        <p class="text-white/40 text-sm leading-relaxed max-w-sm">A maior plataforma de mindfulness do Brasil.</p>
+      </div>
+    </div>
+    <div class="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-4"><p class="text-white/25 text-xs">© 2026 Evidence-Based Mindfulness University. Todos os direitos reservados.</p><div class="flex gap-6"><a href="../privacidade.html" class="text-white/25 text-xs hover:text-white/50 transition-colors">Privacidade</a><a href="../termos.html" class="text-white/25 text-xs hover:text-white/50 transition-colors">Termos</a></div></div>
+  </div>
+</footer>
+
+<script>
+  function formatData(iso) {
+    if (!iso) return "";
+    var d = new Date(iso + "T00:00:00");
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+  }
+
+  fetch("noticias.json")
+    .then(function (res) { return res.ok ? res.json() : []; })
+    .then(function (data) {
+      var valid = Array.isArray(data) ? data.filter(function (n) { return typeof n.imagem === "string" && n.imagem.trim() !== ""; }) : [];
+      var items = valid.sort(function (a, b) { return new Date(b.data) - new Date(a.data); });
+      var grid = document.getElementById("noticias-grid");
+      var empty = document.getElementById("noticias-empty");
+      if (items.length === 0) {
+        empty.hidden = false;
+        return;
+      }
+      grid.hidden = false;
+      items.forEach(function (item) {
+        var card = document.createElement("article");
+        card.className = "noticia-card";
+        card.innerHTML =
+            '<img src="' + item.imagem + '" alt="' + (item.imagemAlt || item.titulo) + '" loading="lazy" />' +
+          '<div class="noticia-card-body">' +
+            '<div class="noticia-meta"><span>' + item.categoria + '</span><span aria-hidden="true">&middot;</span><time datetime="' + item.data + '">' + formatData(item.data) + '</time></div>' +
+            '<h3>' + item.titulo + '</h3>' +
+            '<p>' + item.resumo + '</p>' +
+            '<a class="ler-mais" href="noticia.html?slug=' + encodeURIComponent(item.slug || item.id) + '">LER MAIS &rarr;</a>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+    })
+    .catch(function () {
+      document.getElementById("noticias-empty").hidden = false;
+    });
+</script>
+</body>
+</html>

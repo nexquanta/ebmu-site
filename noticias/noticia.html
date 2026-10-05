@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/png" href="../uploads/logoredimensionado.png" />
+<title id="page-title">Notícia | EBMU — Evidence-Based Mindfulness University</title>
+<meta name="description" content="Notícias e novidades da Evidence-Based Mindfulness University." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="../institucional.css" />
+<style>
+  .noticia-hero-img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 1rem; border: 1px solid rgba(0,0,0,0.1); margin-top: 2.5rem; }
+  .noticia-meta { color: rgba(0,0,0,0.4); font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; display: flex; gap: 0.5rem; align-items: center; }
+  .noticia-conteudo { color: rgba(0,0,0,0.68); font-size: 1.05rem; line-height: 1.85; margin-top: 2.5rem; }
+  .noticia-conteudo p + p, .noticia-conteudo h2 + p, .noticia-conteudo ul + p { margin-top: 1.25rem; }
+  .noticia-conteudo h2 { color: #000; font-family: 'Instrument Serif', serif; font-size: 1.65rem; font-weight: 400; margin-top: 2.25rem; }
+  .noticia-conteudo--entrevista h2 { font-family: inherit; font-size: 1rem; font-weight: 700; line-height: 1.6; margin-top: 2rem; }
+  .noticia-conteudo ul { margin-top: 1.25rem; padding-left: 1.25rem; display: grid; gap: 0.6rem; }
+  .noticia-conteudo img { width: 100%; border-radius: 0.85rem; margin-top: 1.75rem; }
+  .noticia-conteudo figcaption { color: rgba(0,0,0,0.4); font-size: 0.8rem; margin-top: 0.6rem; }
+  .noticia-conteudo blockquote { border-left: 2px solid rgba(0,0,0,0.2); color: #000; font-family: 'Instrument Serif', serif; font-size: 1.65rem; line-height: 1.35; margin: 2.5rem 0 0; padding-left: 1.25rem; }
+  .noticia-conteudo blockquote cite { color: rgba(0,0,0,0.5); display: block; font-family: inherit; font-size: 1rem; font-style: normal; margin-top: 0.75rem; }
+  .noticia-referencias { color: rgba(0,0,0,0.68); display: grid; gap: 1.5rem; margin-top: 1.25rem; padding-left: 1.25rem; }
+  .noticia-referencias a { color: rgba(0,0,0,0.55); display: inline-block; font-size: 0.78rem; letter-spacing: 0.08em; margin-top: 0.5rem; text-decoration: none; }
+  .noticia-referencias a:hover { color: #000; }
+  .noticia-galeria { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 2.5rem; }
+  .noticia-galeria img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 0.85rem; border: 1px solid rgba(0,0,0,0.1); }
+</style>
+</head>
+<body style="background:#fff;">
+<main class="page-main px-6 md:px-16 lg:px-24 py-24 md:py-32">
+  <article class="mx-auto" id="noticia-content" style="max-width: 800px;" hidden>
+    <p class="text-black/40 text-xs tracking-[0.3em] uppercase">EBMU / Por Dentro</p>
+    <div id="noticia-meta" class="noticia-meta mt-5"></div>
+    <h1 id="noticia-titulo" class="mt-4 text-4xl md:text-5xl text-black" style="font-family: 'Instrument Serif', serif; font-weight: 400;"></h1>
+    <p id="noticia-linha-fina" class="mt-5 text-black/60 text-lg leading-relaxed"></p>
+    <time id="noticia-data" class="noticia-meta mt-5"></time>
+    <img id="noticia-imagem" class="noticia-hero-img" alt="" />
+    <div id="noticia-corpo" class="noticia-conteudo"></div>
+    <div id="noticia-galeria" class="noticia-galeria" hidden></div>
+  </article>
+
+  <div id="noticia-not-found" class="mx-auto" style="max-width: 800px;" hidden>
+    <p class="text-black/40 text-xs tracking-[0.3em] uppercase">EBMU / Por Dentro</p>
+    <h1 class="mt-5 text-4xl text-black" style="font-family: 'Instrument Serif', serif; font-weight: 400;">Notícia não encontrada</h1>
+    <p class="mt-5 text-black/60 text-base leading-relaxed">Esta publicação não está mais disponível ou o link utilizado está incorreto.</p>
+  </div>
+</main>
+
+<footer class="site-footer bg-black py-16 px-6 md:px-16 lg:px-24">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-4 lg:grid-cols-[1.35fr_1fr_1fr_1fr] gap-10 lg:gap-14">
+      <div>
+        <a href="../Hero.html" aria-label="Voltar para a Home da EBMU"><img src="../uploads/logoredimensionado.png" alt="EBM University" class="h-10 w-auto mb-4" /></a>
+        <p class="text-white/40 text-sm leading-relaxed max-w-sm">A maior plataforma de mindfulness do Brasil.</p>
+      </div>
+    </div>
+    <div class="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-4"><p class="text-white/25 text-xs">© 2026 Evidence-Based Mindfulness University. Todos os direitos reservados.</p><div class="flex gap-6"><a href="../privacidade.html" class="text-white/25 text-xs hover:text-white/50 transition-colors">Privacidade</a><a href="../termos.html" class="text-white/25 text-xs hover:text-white/50 transition-colors">Termos</a></div></div>
+  </div>
+</footer>
+
+<script>
+  function formatData(iso) {
+    if (!iso) return "";
+    var d = new Date(iso + "T00:00:00");
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var lookup = params.get("slug") || params.get("id");
+
+  fetch("noticias.json")
+    .then(function (res) { return res.ok ? res.json() : []; })
+    .then(function (data) {
+      var items = Array.isArray(data) ? data.filter(function (n) { return (typeof n.imagem === "string" && n.imagem.trim() !== "") || n.slug === lookup || String(n.id) === String(lookup); }) : [];
+      var item = items.find(function (n) { return n.slug === lookup || String(n.id) === String(lookup); });
+      if (!item) {
+        document.getElementById("noticia-not-found").hidden = false;
+        return;
+      }
+      document.getElementById("page-title").textContent = item.titulo + " | EBMU";
+      document.getElementById("noticia-meta").textContent = item.categoria;
+      document.getElementById("noticia-titulo").textContent = item.titulo;
+      var linhaFina = document.getElementById("noticia-linha-fina");
+      linhaFina.textContent = item.linhaFina || "";
+      linhaFina.hidden = !item.linhaFina;
+      var data = document.getElementById("noticia-data");
+      data.dateTime = item.data;
+      data.textContent = formatData(item.data);
+      var img = document.getElementById("noticia-imagem");
+      img.hidden = !(typeof item.imagem === "string" && item.imagem.trim() !== "");
+      img.src = item.imagem ? "../" + item.imagem : "";
+      img.alt = item.imagemAlt || item.titulo;
+      var noticiaCorpo = document.getElementById("noticia-corpo");
+      noticiaCorpo.classList.toggle("noticia-conteudo--entrevista", String(item.categoria || "").toLocaleUpperCase("pt-BR") === "ENTREVISTA");
+      noticiaCorpo.innerHTML = item.conteudo || "<p>" + (item.resumo || "") + "</p>";
+      if (Array.isArray(item.imagensAdicionais) && item.imagensAdicionais.length > 0) {
+        var galeria = document.getElementById("noticia-galeria");
+        item.imagensAdicionais.forEach(function (src) {
+          var el = document.createElement("img");
+          el.src = src;
+          el.alt = item.titulo;
+          el.loading = "lazy";
+          galeria.appendChild(el);
+        });
+        galeria.hidden = false;
+      }
+      document.getElementById("noticia-content").hidden = false;
+    })
+    .catch(function () {
+      document.getElementById("noticia-not-found").hidden = false;
+    });
+</script>
+</body>
+</html>
