@@ -1396,7 +1396,10 @@ function FooterSection() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-4">
-          <p className="text-white/25 text-xs">© 2026 Evidence-Based Mindfulness University. Todos os direitos reservados.</p>
+          <div>
+            <p className="text-white/25 text-xs">© 2026 Evidence-Based Mindfulness University. Todos os direitos reservados.</p>
+            <p className="mt-2 text-white/25 text-xs">Desenvolvido por <a href="mailto:nexquanta.ai@gmail.com" className="hover:text-white/50 transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white/50">NQ. Tech.</a></p>
+          </div>
           <div className="flex gap-6">
             <a href="privacidade.html" target="_blank" rel="noopener noreferrer" onClick={(event) => { event.preventDefault(); window.open("privacidade.html", "_blank", "popup=yes,width=1280,height=900,resizable=yes,scrollbars=yes"); }} className="text-white/25 text-xs hover:text-white/50 transition-colors">Privacidade</a>
             <a href="termos.html" target="_blank" rel="noopener noreferrer" onClick={(event) => { event.preventDefault(); window.open("termos.html", "_blank", "popup=yes,width=1280,height=900,resizable=yes,scrollbars=yes"); }} className="text-white/25 text-xs hover:text-white/50 transition-colors">Termos</a>
