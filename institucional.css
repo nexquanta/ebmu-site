@@ -182,7 +182,7 @@ body {
 
 .site-footer > div > .grid > div:not(:first-child),
 .site-footer > div > .mt-14,
-.site-footer > div > .mt-12 > div {
+.site-footer > div > .mt-12 > div:not(.footer-credit) {
   display: none;
 }
 
